@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: zapix
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/zapix
+    username: zapix
+    password: zapix
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
