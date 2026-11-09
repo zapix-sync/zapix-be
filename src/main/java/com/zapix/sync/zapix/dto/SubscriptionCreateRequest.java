@@ -1,0 +1,30 @@
+package com.zapix.sync.zapix.dto;
+
+import com.zapix.sync.zapix.enums.BillingCycle;
+import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
+
+public record SubscriptionCreateRequest(
+        @NotNull(message = "customerId is required")
+        UUID customerId,
+
+        @NotBlank(message = "description is required")
+        @Size(max = 150, message = "description must have at most 150 characters")
+        String description,
+
+        @NotNull(message = "amount is required")
+        @DecimalMin(value = "0.01", message = "amount must be greater than zero")
+        @Digits(integer = 10, fraction = 2, message = "amount must have at most 10 integer digits and 2 decimal places")
+        BigDecimal amount,
+
+        @NotNull(message = "billingCycle is required")
+        BillingCycle billingCycle,
+
+        @NotNull(message = "firstDueDate is required")
+        @FutureOrPresent(message = "firstDueDate cannot be in the past")
+        LocalDate firstDueDate
+) {
+}
