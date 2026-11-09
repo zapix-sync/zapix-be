@@ -1,4 +1,4 @@
-package com.zapix.sync.Zapix;
+package com.zapix.sync.zapix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

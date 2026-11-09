@@ -1,4 +1,4 @@
-package com.zapix.sync.Zapix;
+package com.zapix.sync.zapix;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
