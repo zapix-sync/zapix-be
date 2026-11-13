@@ -32,6 +32,14 @@ public class Charge extends BaseEntity {
 
     private BigDecimal amount;
 
+    private String gatewayChargeId;
+
+    private String pixCopyPaste;
+
+    private String pixQrCodeUrl;
+
+    private Instant pixExpiresAt;
+
     private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)

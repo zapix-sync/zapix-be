@@ -18,6 +18,10 @@ public record ChargeResponse(
         LocalDate dueDate,
         ChargeStatus status,
         Instant paidAt,
+        String gatewayChargeId,
+        String pixCopyPaste,
+        String pixQrCodeUrl,
+        Instant pixExpiresAt,
         Instant createdAt,
         Instant updatedAt
 ) {

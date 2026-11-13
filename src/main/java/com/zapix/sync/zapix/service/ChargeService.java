@@ -9,6 +9,7 @@ import com.zapix.sync.zapix.model.Charge;
 import com.zapix.sync.zapix.repository.ChargeRepository;
 import com.zapix.sync.zapix.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChargeService {
@@ -61,6 +63,22 @@ public class ChargeService {
     @Transactional
     public int markOverdue(LocalDate today) {
         return chargeRepository.markOverdue(ChargeStatus.PENDING, ChargeStatus.OVERDUE, today, Instant.now());
+    }
+
+    @Transactional
+    public void confirmPayment(String gatewayChargeId, Instant paidAt) {
+        Charge charge = chargeRepository.findByGatewayChargeId(gatewayChargeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Charge not found for gateway id: " + gatewayChargeId));
+
+        switch (charge.getStatus()) {
+            case PENDING, OVERDUE -> {
+                charge.setStatus(ChargeStatus.PAID);
+                charge.setPaidAt(paidAt);
+            }
+
+            case PAID -> log.info("Charge {} is already paid, ignoring duplicate notification", charge.getId());
+            case CANCELED -> log.warn("Payment received for canceled charge {}: manual review needed", charge.getId());
+        }
     }
 
     private Charge getOrThrow(UUID companyId, UUID id) {

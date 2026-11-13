@@ -18,6 +18,7 @@ public interface ChargeRepository extends JpaRepository<Charge, UUID> {
     Optional<Charge> findByIdAndCompanyId(UUID id, UUID companyId);
     Page<Charge> findAllByCompanyId(UUID companyId, Pageable pageable);
     Page<Charge> findAllByCompanyIdAndStatus(UUID companyId, ChargeStatus status, Pageable pageable);
+    Optional<Charge> findByGatewayChargeId(String gatewayChargeId);
 
     boolean existsBySubscriptionIdAndDueDate(UUID subscriptionId, LocalDate dueDate);
 

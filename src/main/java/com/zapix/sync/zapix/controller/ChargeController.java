@@ -2,6 +2,7 @@ package com.zapix.sync.zapix.controller;
 
 import com.zapix.sync.zapix.dto.ChargeResponse;
 import com.zapix.sync.zapix.enums.ChargeStatus;
+import com.zapix.sync.zapix.service.ChargePixService;
 import com.zapix.sync.zapix.service.ChargeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Tag(name = "Charges")
 public class ChargeController {
     private final ChargeService chargeService;
+    private final ChargePixService chargePixService;
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -45,5 +47,12 @@ public class ChargeController {
     @Operation(summary = "Cancel a pending or overdue charge")
     public ChargeResponse cancel(@PathVariable UUID companyId, @PathVariable UUID id) {
         return chargeService.cancel(companyId, id);
+    }
+
+    @PostMapping("/{id}/pix")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Generate (or reuse) the Pix payment data for a charge")
+    public ChargeResponse generate(@PathVariable UUID companyId, @PathVariable UUID id) {
+        return chargePixService.generatePix(companyId, id);
     }
 }

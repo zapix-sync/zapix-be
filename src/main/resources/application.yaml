@@ -27,7 +27,7 @@ management:
       exposure:
         include: health,info
 
-zapix:
-  billing:
-    cron: "0 * * * * *"
-    days-ahead: 10
+#zapix:
+#  billing:
+#    cron: "0 * * * * *"
+#    days-ahead: 10
