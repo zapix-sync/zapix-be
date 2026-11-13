@@ -31,6 +31,8 @@ public class Subscription extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private BillingCycle billingCycle;
 
+    private int billingDay;
+
     private LocalDate nextDueDate;
 
     @Enumerated(EnumType.STRING)

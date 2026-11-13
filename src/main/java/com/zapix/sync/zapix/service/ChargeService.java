@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -54,6 +56,11 @@ public class ChargeService {
         charge.setStatus(ChargeStatus.CANCELED);
 
         return chargeMapper.toResponse(chargeRepository.saveAndFlush(charge));
+    }
+
+    @Transactional
+    public int markOverdue(LocalDate today) {
+        return chargeRepository.markOverdue(ChargeStatus.PENDING, ChargeStatus.OVERDUE, today, Instant.now());
     }
 
     private Charge getOrThrow(UUID companyId, UUID id) {

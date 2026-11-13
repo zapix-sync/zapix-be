@@ -41,6 +41,7 @@ public class SubscriptionService {
         }
 
         Subscription subscription = subscriptionMapper.toEntity(request);
+        subscription.setBillingDay(request.firstDueDate().getDayOfMonth());
         subscription.setCompany(company);
         subscription.setCustomer(customer);
 

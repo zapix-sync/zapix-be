@@ -26,3 +26,8 @@ management:
     web:
       exposure:
         include: health,info
+
+zapix:
+  billing:
+    cron: "0 * * * * *"
+    days-ahead: 10

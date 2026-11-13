@@ -15,6 +15,7 @@ public interface SubscriptionMapper {
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "nextDueDate", source = "firstDueDate")
+    @Mapping(target = "billingDay", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Subscription toEntity(SubscriptionCreateRequest request);
@@ -29,6 +30,7 @@ public interface SubscriptionMapper {
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "nextDueDate", ignore = true)
+    @Mapping(target = "billingDay", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     void updateEntity(SubscriptionUpdateRequest request, @MappingTarget Subscription subscription);
