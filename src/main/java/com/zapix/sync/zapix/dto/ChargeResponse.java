@@ -22,6 +22,7 @@ public record ChargeResponse(
         String pixCopyPaste,
         String pixQrCodeUrl,
         Instant pixExpiresAt,
+        String paymentUrl,
         Instant createdAt,
         Instant updatedAt
 ) {

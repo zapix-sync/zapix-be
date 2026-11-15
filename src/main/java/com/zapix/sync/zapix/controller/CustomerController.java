@@ -4,6 +4,7 @@ import com.zapix.sync.zapix.dto.CustomerRequest;
 import com.zapix.sync.zapix.dto.CustomerResponse;
 import com.zapix.sync.zapix.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a customer")
     public CustomerResponse create(
-            @PathVariable UUID companyId,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
             @Valid
             @RequestBody CustomerRequest request) {
         return customerService.create(companyId, request);
@@ -37,8 +38,8 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Find a customer by id")
     public CustomerResponse findById(
-            @PathVariable UUID companyId,
-            @PathVariable UUID id) {
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Customer id") @PathVariable UUID id) {
         return customerService.findById(companyId, id);
     }
 
@@ -46,7 +47,7 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List customers of a company, paginated")
     public PagedModel<CustomerResponse> findAll(
-            @PathVariable UUID companyId,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
             @ParameterObject Pageable pageable) {
         return new PagedModel<>(customerService.findAll(companyId, pageable));
     }
@@ -55,8 +56,8 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a customer")
     public CustomerResponse update(
-            @PathVariable UUID companyId,
-            @PathVariable UUID id,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Customer id") @PathVariable UUID id,
             @Valid
             @RequestBody CustomerRequest request) {
         return customerService.update(companyId, id, request);
@@ -65,7 +66,9 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deactivate a customer")
-    public void deactivate(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public void deactivate(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Customer id") @PathVariable UUID id) {
         customerService.deactivate(companyId, id);
     }
 }

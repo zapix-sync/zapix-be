@@ -27,7 +27,11 @@ management:
       exposure:
         include: health,info
 
-#zapix:
-#  billing:
-#    cron: "0 * * * * *"
-#    days-ahead: 10
+zapix:
+  pix:
+    gateway: stripe
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+  success-url: http://localhost:3000/payment/success

@@ -40,6 +40,8 @@ public class Charge extends BaseEntity {
 
     private Instant pixExpiresAt;
 
+    private String paymentUrl;
+
     private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)

@@ -3,6 +3,9 @@ package com.zapix.sync.zapix.exception;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.stripe.exception.InvalidRequestException;
+import com.zapix.sync.zapix.integration.pix.PixGatewayException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -45,6 +49,22 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problem.setTitle("Business rule violated");
+        return problem;
+    }
+
+    @ExceptionHandler(PixGatewayException.class)
+    public ProblemDetail handlePixGateway(PixGatewayException ex) {
+        log.error("Pix gateway error", ex);
+
+        if (ex.getCause() instanceof InvalidRequestException invalidRequest) {
+            ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, invalidRequest.getMessage());
+            problem.setTitle("Invalid Pix charge request");
+            return problem;
+        }
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_GATEWAY, "The payment provider is unavailable. Try again later");
+        problem.setTitle("Payment provider error");
         return problem;
     }
 }

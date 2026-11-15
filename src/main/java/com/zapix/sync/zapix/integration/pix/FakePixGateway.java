@@ -16,6 +16,7 @@ public class FakePixGateway implements PixGateway {
 
         return new PixChargeResult(
                 gatewayChargeId,
+                "https://example.com/fake-pay/" + gatewayChargeId,
                 "FAKE-PIX-NOT-A-REAL-PAYMENT-" + request.amount(),
                 "https://example.com/fake-qr/" + gatewayChargeId + ".png",
                 Instant.now().plus(1, ChronoUnit.DAYS));

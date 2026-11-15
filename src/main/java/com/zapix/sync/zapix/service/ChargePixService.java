@@ -41,6 +41,7 @@ public class ChargePixService {
                     new PixChargeRequest(charge.getId(), charge.getAmount(), charge.getDescription()));
 
             charge.setGatewayChargeId(result.gatewayChargeId());
+            charge.setPaymentUrl(result.paymentUrl());
             charge.setPixCopyPaste(result.copyPaste());
             charge.setPixQrCodeUrl(result.qrCodeUrl());
             charge.setPixExpiresAt(result.expiresAt());

@@ -5,6 +5,7 @@ import com.zapix.sync.zapix.enums.ChargeStatus;
 import com.zapix.sync.zapix.service.ChargePixService;
 import com.zapix.sync.zapix.service.ChargeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -27,8 +28,8 @@ public class ChargeController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Find a charge by id")
     public ChargeResponse findById(
-            @PathVariable UUID companyId,
-            @PathVariable UUID id) {
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Charge id") @PathVariable UUID id) {
         return chargeService.findById(companyId, id);
     }
 
@@ -36,7 +37,7 @@ public class ChargeController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List charges of a company, optionally filtered by status")
     public PagedModel<ChargeResponse> findAll(
-            @PathVariable UUID companyId,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
             @RequestParam(required = false) ChargeStatus status,
             @ParameterObject Pageable pageable) {
         return new PagedModel<>(chargeService.findAll(companyId, status, pageable));
@@ -45,14 +46,18 @@ public class ChargeController {
     @PatchMapping("/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Cancel a pending or overdue charge")
-    public ChargeResponse cancel(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public ChargeResponse cancel(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Charge id") @PathVariable UUID id) {
         return chargeService.cancel(companyId, id);
     }
 
     @PostMapping("/{id}/pix")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generate (or reuse) the Pix payment data for a charge")
-    public ChargeResponse generate(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public ChargeResponse generate(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Charge id") @PathVariable UUID id) {
         return chargePixService.generatePix(companyId, id);
     }
 }

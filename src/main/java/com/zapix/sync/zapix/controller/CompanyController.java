@@ -21,6 +21,7 @@ import com.zapix.sync.zapix.dto.CompanyResponse;
 import com.zapix.sync.zapix.service.CompanyService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class CompanyController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Find a company by id")
-    public CompanyResponse findById(@PathVariable UUID id) {
+    public CompanyResponse findById(@Parameter(description = "Company id") @PathVariable UUID id) {
         return companyService.findById(id);
     }
 
@@ -57,14 +58,16 @@ public class CompanyController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a company")
-    public CompanyResponse update(@PathVariable UUID id, @Valid @RequestBody CompanyRequest request) {
+    public CompanyResponse update(
+            @Parameter(description = "Company id") @PathVariable UUID id,
+            @Valid @RequestBody CompanyRequest request) {
         return companyService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deactivate a company")
-    public void deactivate(@PathVariable UUID id) {
+    public void deactivate(@Parameter(description = "Company id") @PathVariable UUID id) {
         companyService.deactivate(id);
     }
 }

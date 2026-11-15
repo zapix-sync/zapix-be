@@ -5,6 +5,7 @@ import com.zapix.sync.zapix.dto.SubscriptionResponse;
 import com.zapix.sync.zapix.dto.SubscriptionUpdateRequest;
 import com.zapix.sync.zapix.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a subscription")
     public SubscriptionResponse create(
-            @PathVariable UUID companyId,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
             @Valid
             @RequestBody SubscriptionCreateRequest request) {
 
@@ -39,8 +40,8 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Find a subscription by id")
     public SubscriptionResponse findById(
-            @PathVariable UUID companyId,
-            @PathVariable UUID id) {
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Subscription id") @PathVariable UUID id) {
 
         return subscriptionService.findById(companyId, id);
     }
@@ -49,8 +50,8 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List subscriptions of a company, optionally filtered by customer")
     public PagedModel<SubscriptionResponse> findAll(
-            @PathVariable UUID companyId,
-            @RequestParam(required = false) UUID customerId,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Customer id") @RequestParam(required = false) UUID customerId,
             @ParameterObject Pageable pageable) {
 
         return new PagedModel<>(subscriptionService.findAll(companyId, customerId, pageable));
@@ -60,8 +61,8 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update description, amount and billing cycle")
     public SubscriptionResponse update(
-            @PathVariable UUID companyId,
-            @PathVariable UUID id,
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Subscription id") @PathVariable UUID id,
             @Valid @RequestBody SubscriptionUpdateRequest request) {
 
         return subscriptionService.update(companyId, id, request);
@@ -70,21 +71,27 @@ public class SubscriptionController {
     @PatchMapping("/{id}/pause")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Pause a subscription")
-    public SubscriptionResponse pause(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public SubscriptionResponse pause(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Subscription id") @PathVariable UUID id) {
         return subscriptionService.pause(companyId, id);
     }
 
     @PatchMapping("/{id}/resume")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Resume a paused subscription")
-    public SubscriptionResponse resume(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public SubscriptionResponse resume(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Subscription id") @PathVariable UUID id) {
         return subscriptionService.resume(companyId, id);
     }
 
     @PatchMapping("/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Cancel a subscription")
-    public SubscriptionResponse cancel(@PathVariable UUID companyId, @PathVariable UUID id) {
+    public SubscriptionResponse cancel(
+            @Parameter(description = "Company id") @PathVariable UUID companyId,
+            @Parameter(description = "Subscription id") @PathVariable UUID id) {
         return subscriptionService.cancel(companyId, id);
     }
 

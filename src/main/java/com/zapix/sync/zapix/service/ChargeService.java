@@ -68,14 +68,26 @@ public class ChargeService {
     @Transactional
     public void confirmPayment(String gatewayChargeId, Instant paidAt) {
         Charge charge = chargeRepository.findByGatewayChargeId(gatewayChargeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Charge not found for gateway id: " + gatewayChargeId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Charge not found for gateway id: " + gatewayChargeId));
 
+        markAsPaid(charge, paidAt);
+    }
+
+    @Transactional
+    public void confirmPaymentByChargeId(UUID chargeId, Instant paidAt) {
+        Charge charge = chargeRepository.findById(chargeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Charge not found: " + chargeId));
+
+        markAsPaid(charge, paidAt);
+    }
+
+    private void markAsPaid(Charge charge, Instant paidAt) {
         switch (charge.getStatus()) {
             case PENDING, OVERDUE -> {
                 charge.setStatus(ChargeStatus.PAID);
                 charge.setPaidAt(paidAt);
             }
-
             case PAID -> log.info("Charge {} is already paid, ignoring duplicate notification", charge.getId());
             case CANCELED -> log.warn("Payment received for canceled charge {}: manual review needed", charge.getId());
         }
