@@ -2,6 +2,10 @@ spring:
   application:
     name: zapix
 
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/zapix
     username: zapix

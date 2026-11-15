@@ -53,12 +53,16 @@ public class StripeWebhookController {
         try {
             event = Webhook.constructEvent(payload, signature, webhookSecret);
         } catch (SignatureVerificationException ex) {
+            log.warn("Stripe webhook signature verification failed");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Stripe signature");
         }
+
+        log.info("Received Stripe event {} ({})", event.getType(), event.getId());
 
         switch (event.getType()) {
             case "payment_intent.succeeded" -> handlePaymentSucceeded(event);
             case "checkout.session.async_payment_succeeded" -> handleCheckoutPaymentSucceeded(event);
+            case "checkout.session.completed" -> handleCheckoutSessionCompleted(event);
             case "payment_intent.payment_failed" -> log.info(
                     "Pix payment failed or expired (event {}). The charge stays open, a new link can be generated",
                     event.getId());
@@ -84,6 +88,21 @@ public class StripeWebhookController {
 
     private void handleCheckoutPaymentSucceeded(Event event) {
         Session session = extractCheckoutSession(event);
+        confirmCheckoutSessionPayment(session, event);
+    }
+
+    private void handleCheckoutSessionCompleted(Event event) {
+        Session session = extractCheckoutSession(event);
+        if (!"paid".equals(session.getPaymentStatus())) {
+            log.info("Checkout Session {} completed with payment status {}; waiting for async payment event",
+                    session.getId(), session.getPaymentStatus());
+            return;
+        }
+
+        confirmCheckoutSessionPayment(session, event);
+    }
+
+    private void confirmCheckoutSessionPayment(Session session, Event event) {
         String chargeId = session.getClientReferenceId();
 
         if (chargeId == null) {
@@ -95,6 +114,8 @@ public class StripeWebhookController {
             chargeService.confirmPaymentByChargeId(
                     UUID.fromString(chargeId),
                     Instant.ofEpochSecond(event.getCreated()));
+            log.info("Processed successful payment for charge {} from Stripe event {}",
+                    chargeId, event.getId());
         } catch (ResourceNotFoundException e) {
             log.warn("Stripe Checkout Session {} refers to unknown charge {}", session.getId(), chargeId);
         }

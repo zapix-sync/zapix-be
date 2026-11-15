@@ -22,13 +22,30 @@ class StripeWebhookControllerTest {
 
     @Test
     void confirmsChargeFromAsyncCheckoutPaymentSucceededEvent() throws Exception {
-        ChargeService chargeService = mock(ChargeService.class);
-        StripeWebhookController controller = new StripeWebhookController(chargeService);
-        ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
-
         UUID chargeId = UUID.randomUUID();
         long createdAt = 1_794_754_800L;
-        String payload = """
+        String payload = checkoutEventPayload(
+                "checkout.session.async_payment_succeeded", createdAt, chargeId, null);
+
+        assertChargeConfirmed(chargeId, payload);
+    }
+
+    @Test
+    void confirmsChargeFromCompletedCheckoutWhenPaymentIsAlreadyPaid() throws Exception {
+        UUID chargeId = UUID.randomUUID();
+        long createdAt = 1_794_754_800L;
+        String payload = checkoutEventPayload("checkout.session.completed", createdAt, chargeId, "paid");
+
+        assertChargeConfirmed(chargeId, payload);
+    }
+
+    private String checkoutEventPayload(String eventType, long createdAt, UUID chargeId, String paymentStatus) {
+        String paymentStatusField = paymentStatus == null
+                ? ""
+                : """
+                          "payment_status": "%s",
+                        """.formatted(paymentStatus);
+        return """
                 {
                   "id": "evt_test",
                   "object": "event",
@@ -38,17 +55,22 @@ class StripeWebhookControllerTest {
                     "object": {
                       "id": "cs_test_checkout",
                       "object": "checkout.session",
+                      %s
                       "client_reference_id": "%s"
                     }
                   },
                   "livemode": false,
                   "pending_webhooks": 1,
-                  "type": "checkout.session.async_payment_succeeded"
+                  "type": "%s"
                 }
-                """.formatted(createdAt, chargeId);
+                """.formatted(createdAt, paymentStatusField, chargeId, eventType);
+    }
 
+    private void assertChargeConfirmed(UUID chargeId, String payload) throws Exception {
+        ChargeService chargeService = mock(ChargeService.class);
+        StripeWebhookController controller = new StripeWebhookController(chargeService);
+        ReflectionTestUtils.setField(controller, "webhookSecret", WEBHOOK_SECRET);
         controller.handle(payload, signatureHeader(payload, Instant.now().getEpochSecond()));
-
         verify(chargeService).confirmPaymentByChargeId(eq(chargeId), any());
     }
 
