@@ -32,8 +32,18 @@ management:
         include: health,info
 
 zapix:
+  notification:
+    cron: "0 * * * * *"
+    delay-ms: 0
+  whatsapp:
+    gateway: evolution
   pix:
     gateway: stripe
+
+evolution:
+  base-url: http://localhost:8081
+  api-key: ${EVOLUTION_API_KEY:}
+  instance: Zapix
 
 stripe:
   secret-key: ${STRIPE_SECRET_KEY:}

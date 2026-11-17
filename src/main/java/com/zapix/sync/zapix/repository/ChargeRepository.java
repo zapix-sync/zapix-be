@@ -35,4 +35,17 @@ public interface ChargeRepository extends JpaRepository<Charge, UUID> {
                     @Param("overdue") ChargeStatus overdue,
                     @Param("today") LocalDate today,
                     @Param("now")Instant now);
+
+    @Query("""
+            select c from Charge c
+            join fetch c.customer cu
+            join fetch c.company
+            where c.dueDate = :dueDate
+              and c.status in :statuses
+              and cu.whatsappOptIn = true
+              and cu.active = true
+              and cu.phone is not null
+            """)
+    List<Charge> findNotifiable(@Param("dueDate") LocalDate dueDate,
+                                @Param("statuses") Collection<ChargeStatus> statuses);
 }
