@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +21,7 @@ public interface ChargeRepository extends JpaRepository<Charge, UUID> {
     Page<Charge> findAllByCompanyId(UUID companyId, Pageable pageable);
     Page<Charge> findAllByCompanyIdAndStatus(UUID companyId, ChargeStatus status, Pageable pageable);
     Optional<Charge> findByGatewayChargeId(String gatewayChargeId);
+    List<Charge> findAllByStatusInAndGatewayChargeIdIsNotNullAndPixExpiresAtAfter(Collection<ChargeStatus> statuses, Instant since);
 
     boolean existsBySubscriptionIdAndDueDate(UUID subscriptionId, LocalDate dueDate);
 
